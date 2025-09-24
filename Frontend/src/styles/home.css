@@ -1,0 +1,185 @@
+.homeContainer {
+  height: 100vh;
+  width: 100vw;
+  background: url('../assets/vidora.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: white;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  padding-inline: 1.2rem;
+  padding-block: 1.6rem;
+}
+
+.nav h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.side {
+  display: flex;
+  gap: 1.6rem;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.mainContainer {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.rightPanel img {
+  height: 70vh;
+  width: auto;
+  /* margin-top: 3rem; */
+}
+
+.leftPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40%;
+  text-align: center;
+}
+
+.leftPanelButtons {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  gap: 1.6rem;
+  margin-top: 2rem;
+  justify-content: center;
+}
+
+.meetingIdContainer {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.meetingIDContainer .MuiButton-root {
+  margin-left: 0.5rem;
+  height: 54px;
+  /* same as default MUI filled TextField height */
+}
+
+.leftPanelButtons input {
+  background-color: white;
+  border-radius: 8px;
+}
+
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+
+
+
+
+
+
+/* Navigation button container */
+.side {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* Base style for buttons */
+.nav-simple-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: #ffffff20;
+  /* subtle transparent white */
+  border: 1px solid #ffffff40;
+  color: white;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+}
+
+/* Hover effect */
+.nav-simple-btn:hover {
+  background-color: #ffffff35;
+  transform: translateY(-1px);
+}
+
+/* Active click effect */
+.nav-simple-btn:active {
+  transform: scale(0.98);
+}
+
+/* Logout button with slight red accent */
+.logout-btn {
+  background-color: #ff4d4d20;
+  border: 1px solid #ff4d4d40;
+  color: #ff4d4d;
+}
+
+.logout-btn:hover {
+  background-color: #ff4d4d35;
+}
+
+/* Icon styling */
+.nav-icon {
+  font-size: 1.1rem;
+}
+
+.modeToggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+#copy-icon-button {
+  background-color: #fff; /* match TextField's filled bg */
+  border: none;
+  height: 100%;
+  width: 36px;
+  min-width: auto;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+#content-copy-icon {
+  color: #000;               /* icon color, adjust if input bg is dark */
+  font-size: 20px;
+}
+
+
+/* Hide the right panel image on screens below 1024px */
+@media (max-width: 1024px) {
+  .rightPanel {
+    display: none;
+  }
+
+  /* Optional: center the left panel when right panel is hidden */
+  .mainContainer {
+    margin-top: 12rem;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .leftPanel {
+    width: 90%; /* make it take more space when image is hidden */
+  }
+}

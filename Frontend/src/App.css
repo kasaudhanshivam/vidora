@@ -1,0 +1,177 @@
+/* Landing Page CSS */
+
+.landingPageContainer {
+    width: 100vw;
+    height: 100vh;
+    background: url('./assets/vidora.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: white;
+}
+
+.landingPageContainer nav {
+    padding-inline: 1.2rem;
+    padding-block: 1.6rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.landingPageContainer nav h2{
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.navlist{
+    display: flex;
+    gap: 1.6rem;
+    cursor: pointer;
+}
+
+.landingMainContainer{
+    display: flex;
+    justify-content: space-around;
+}
+
+.heading{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.6rem;
+    width: 40%;
+    padding-left: 2rem;
+    padding-bottom: 1.5rem;
+}
+
+.mobile{
+    display: flex;
+    height: 70vh;
+    width: auto;
+}
+
+.start{
+    width: 30%;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 8px;
+    background-color: #FFB800;
+    color: black;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.start a{
+    text-decoration: none;
+    color: black;
+}
+
+
+
+/* Authentication Page CSS */
+
+.authContainer{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+}
+
+.sideTheme{
+    width: 100vw;
+    height: 100vh;
+    background: url('./assets/vidora.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: white;
+}
+
+
+.authRight {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.auth-box {
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 350px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.auth-box h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+  transition: 0.3s;
+}
+
+.auth-input:focus {
+  border-color: #2575fc;
+  box-shadow: 0 0 6px rgba(37, 117, 252, 0.5);
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 8px;
+  background: #2575fc;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.auth-btn:hover {
+  background: #1a5edb;
+}
+
+.auth-toggle {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.auth-toggle span {
+  color: #2575fc;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.auth-box .error{
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Hide the right panel image on screens below 1024px */
+@media (max-width: 1024px) {
+  .mobile {
+    display: none;
+  }
+
+  /* Optional: center the left panel when right panel is hidden */
+  .landingMainContainer {
+    margin-top: 12rem;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .heading {
+    width: 90%; /* make it take more space when image is hidden */
+  }
+}
