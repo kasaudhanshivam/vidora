@@ -15,10 +15,13 @@ import env from '../environment';
 import SpeakerNotesOffIcon from '@mui/icons-material/SpeakerNotesOff';
 import AccessAlarmIcon from '@mui/icons-material/AccessAlarm';
 import { ToastContainer, toast } from 'react-toastify';
+import { useNavigate } from "react-router-dom";
 
 const server_url = env.socketURL;
 
 var connections = {};
+
+const navigate = useNavigate();
 
 const peerConfigConnections = {
     "iceServers": [
@@ -477,7 +480,8 @@ export default function VideoMeet2() {
             let tracks = localVideoref.current.srcObject.getTracks()
             tracks.forEach(track => track.stop())
         } catch (e) { }
-        window.location.href = "/home"
+        // window.location.href = "/home"
+        navigate("/home");
     }
 
     let openChat = () => {
