@@ -21,7 +21,7 @@ const server_url = env.socketURL;
 
 var connections = {};
 
-const navigate = useNavigate();
+
 
 const peerConfigConnections = {
     "iceServers": [
@@ -61,6 +61,8 @@ export default function VideoMeet2() {
     let [username, setUsername] = useState("");
 
     const videoRef = useRef([])
+
+    const navigate = useNavigate();
 
     let [videos, setVideos] = useState([])
 
