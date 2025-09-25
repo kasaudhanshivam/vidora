@@ -731,11 +731,8 @@ export default function VideoMeet2() {
 
 
                             <div className="chattingArea">
-                                <TextField value={message} onChange={(e) => setMessage(e.target.value)} id="outlined-basic" label="Type something..." variant="outlined" />
-                                {/* <Button variant='contained' onClick={sendMessage}>Send</Button> */}
-                                <Button
-                                    variant='contained'
-                                    onClick={sendMessage}
+                                <TextField value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
                                     // on click enter key also sends message
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
@@ -743,6 +740,12 @@ export default function VideoMeet2() {
                                             sendMessage();
                                         }
                                     }}
+                                    id="outlined-basic" label="Type something..."
+                                    variant="outlined" />
+                                {/* <Button variant='contained' onClick={sendMessage}>Send</Button> */}
+                                <Button
+                                    variant='contained'
+                                    onClick={sendMessage}
                                     disabled={cooldown} // disable during cooldown
                                 >
                                     {cooldown ? (
