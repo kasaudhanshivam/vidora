@@ -736,6 +736,13 @@ export default function VideoMeet2() {
                                 <Button
                                     variant='contained'
                                     onClick={sendMessage}
+                                    // on click enter key also sends message
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            sendMessage();
+                                        }
+                                    }}
                                     disabled={cooldown} // disable during cooldown
                                 >
                                     {cooldown ? (

@@ -23,7 +23,7 @@ const analyzeMessage = async (message) => {
             `${PERSPECTIVE_URL}?key=${PERSPECTIVE_API_KEY}`,
             {
                 comment: { text: message },
-                languages: ["en"],
+                languages: ["en", "hi"],
                 requestedAttributes: {
                     TOXICITY: {},
                     SPAM: {},
