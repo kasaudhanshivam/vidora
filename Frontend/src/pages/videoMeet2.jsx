@@ -16,7 +16,7 @@ import SpeakerNotesOffIcon from '@mui/icons-material/SpeakerNotesOff';
 import AccessAlarmIcon from '@mui/icons-material/AccessAlarm';
 import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
-import ChatModal from '../pages/chatModal';
+import ChatModal from '../pages/ChatModal.jsx';
 
 const server_url = env.socketURL;
 
