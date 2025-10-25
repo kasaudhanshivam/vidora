@@ -98,30 +98,6 @@ export const connectToSocket = (server) => {
 
 
 
-        // Socket.on('join-call', (path) => {
-
-        //     if (connections[path] === undefined) {
-        //         connections[path] = [];
-        //     }
-        //     connections[path].push(Socket.id);
-
-        //     timeOnLine[Socket.id] = new Date();
-
-        //     // Notify existing users
-        //     for (let a = 0; a < connections[path].length; a++) {
-        //         io.to(connections[path][a]).emit('user-joined', Socket.id, connections[path]);
-        //     }
-
-        //     // Send previous chat history to new user
-        //     if (messages[path] !== undefined) {
-        //         for (let b = 0; b < messages[path].length; b++) {
-        //             io.to(Socket.id).emit('chat-message', messages[path][b]['data'], messages[path][b]['sender'], messages[path][b]['Socket-id-sender']);
-        //         }
-        //     }
-
-        // })
-
-
         Socket.on('join-call', (path) => {
             // Extract just the room ID from the path
             const roomId = path.split('/').pop();
@@ -150,50 +126,12 @@ export const connectToSocket = (server) => {
             io.to(toId).emit('signal', Socket.id, message);
         })
 
-        // No Restrictions 
-        // Socket.on('chat-message', (data, sender) => {
-        //     const [matchingRoom, found] = Object.entries(connections)
-        //         .reduce(([room, isFound], [rooKey, roomValue]) => {
-        //             if (!isFound && roomValue.includes(Socket.id)) {
-        //                 return [rooKey, true];
-        //             }
-        //             return [room, isFound];
-        //         }, ['', false]);
-
-        //     if (found === true) {
-        //         if (messages[matchingRoom] === undefined) {
-        //             messages[matchingRoom] = [];
-        //         }
-        //         messages[matchingRoom].push({ 'data': data, 'sender': sender, 'Socket-id-sender': Socket.id });
-
-        //         console.log('messages:', messages, sender, data);
-
-        //         connections[matchingRoom].forEach((elem) => {
-        //             io.to(elem).emit('chat-message', data, sender, Socket.id);
-        //         })
-        //     }
-
-        // })
-
 
         // With Spam Restrictions 
         Socket.on("chat-message", async (data, sender) => {
             const now = Date.now();
             const userData = messageTracker[Socket.id];
             const cleanMessage = data.trim().toLowerCase();
-
-
-            // --- Detect which room this socket belongs to ---
-            // const [matchingRoom, found] = Object.entries(connections).reduce(
-            //     ([room, isFound], [roomKey, roomValue]) => {
-
-            //         if (!isFound && roomValue.includes(Socket.id)) {
-            //             return [roomKey, true];
-            //         }
-            //         return [room, isFound];
-            //     },
-            //     ["", false]
-            // );
 
 
             let [matchingRoom, found] = Object.entries(connections).reduce(
@@ -206,13 +144,7 @@ export const connectToSocket = (server) => {
                 ["", false]
             );
 
-            // Clean the room key
-            // if (matchingRoom.includes("/")) {
-            //     matchingRoom = matchingRoom.split("/").pop();
-            // }
-
-
-
+            
 
 
 
@@ -271,33 +203,33 @@ export const connectToSocket = (server) => {
 
 
                 // AI Moderation Check
-                const scores = await analyzeMessage(cleanMessage);
-                if (scores) {
-                    const toxicity = scores.TOXICITY.summaryScore.value;
-                    const spam = scores.SPAM.summaryScore.value;
-                    const insult = scores.INSULT.summaryScore.value;
-                    const threat = scores.THREAT.summaryScore.value;
+                // const scores = await analyzeMessage(cleanMessage);
+                // if (scores) {
+                //     const toxicity = scores.TOXICITY.summaryScore.value;
+                //     const spam = scores.SPAM.summaryScore.value;
+                //     const insult = scores.INSULT.summaryScore.value;
+                //     const threat = scores.THREAT.summaryScore.value;
 
-                    console.log("AI Moderation Scores:", { toxicity, spam, insult, threat });
+                //     console.log("AI Moderation Scores:", { toxicity, spam, insult, threat });
 
-                    // Customize thresholds
-                    if (toxicity > 0.8) {
-                        Socket.emit("chat-error", "Your message is too toxic to be sent!");
-                        return;
-                    }
-                    if (spam > 0.7) {
-                        Socket.emit("chat-error", "Your message looks like spam.");
-                        return;
-                    }
-                    if (insult > 0.8) {
-                        Socket.emit("chat-error", "Your message contains insults.");
-                        return;
-                    }
-                    if (threat > 0.6) {
-                        Socket.emit("chat-error", "Threatening messages are not allowed!");
-                        return;
-                    }
-                }
+                //     // Customize thresholds
+                //     if (toxicity > 0.8) {
+                //         Socket.emit("chat-error", "Your message is too toxic to be sent!");
+                //         return;
+                //     }
+                //     if (spam > 0.7) {
+                //         Socket.emit("chat-error", "Your message looks like spam.");
+                //         return;
+                //     }
+                //     if (insult > 0.8) {
+                //         Socket.emit("chat-error", "Your message contains insults.");
+                //         return;
+                //     }
+                //     if (threat > 0.6) {
+                //         Socket.emit("chat-error", "Threatening messages are not allowed!");
+                //         return;
+                //     }
+                // }
 
 
 

@@ -16,6 +16,7 @@ import SpeakerNotesOffIcon from '@mui/icons-material/SpeakerNotesOff';
 import AccessAlarmIcon from '@mui/icons-material/AccessAlarm';
 import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
+import ChatModal from '../pages/chatModal';
 
 const server_url = env.socketURL;
 
@@ -75,8 +76,7 @@ export default function VideoMeet2() {
 
     // TODO
     // if(isChrome() === false) {
-
-
+    //     alert("Screen Sharing is only supported in Google Chrome. Please use Google Chrome to share your screen.");
     // }
 
     useEffect(() => {
@@ -361,14 +361,64 @@ export default function VideoMeet2() {
 
 
 
+            // socketRef.current.on('user-left', (id) => {
+            //     setVideos((videos) => videos.filter((video) => video.socketId !== id))
+            // })
+
             socketRef.current.on('user-left', (id) => {
-                setVideos((videos) => videos.filter((video) => video.socketId !== id))
-            })
+                console.log("User left, removing video for:", id);
+
+                // Close the peer connection properly
+                if (connections[id]) {
+                    try {
+                        connections[id].close();
+                    } catch (e) {
+                        console.log("Error closing connection:", e);
+                    }
+                    delete connections[id];
+                }
+
+                // Remove from videos state - force complete removal
+                setVideos((videos) => {
+                    const updatedVideos = videos.filter((video) => {
+                        const shouldRemove = video.socketId !== id;
+                        if (!shouldRemove) {
+                            console.log("Removing video for socket:", id);
+                        }
+                        return shouldRemove;
+                    });
+
+                    // Update the ref to match
+                    videoRef.current = updatedVideos;
+                    console.log("Videos after removal:", updatedVideos.map(v => v.socketId));
+                    return updatedVideos;
+                });
+            });
 
             socketRef.current.on('user-joined', (id, clients) => {
                 clients.forEach((socketListId) => {
 
                     connections[socketListId] = new RTCPeerConnection(peerConfigConnections)
+
+
+
+                    // Add connection state monitoring
+                    connections[socketListId].onconnectionstatechange = function (event) {
+                        console.log(`Connection state for ${socketListId}:`, connections[socketListId].connectionState);
+                        if (connections[socketListId].connectionState === 'failed') {
+                            console.log("Connection failed for:", socketListId);
+                            // Remove failed connection
+                            setTimeout(() => {
+                                setVideos(videos => videos.filter(video => video.socketId !== socketListId));
+                            }, 1000);
+                        }
+                    };
+
+                    connections[socketListId].oniceconnectionstatechange = function (event) {
+                        console.log(`ICE connection state for ${socketListId}:`, connections[socketListId].iceConnectionState);
+                    };
+
+
                     // Wait for their ice candidate       
                     connections[socketListId].onicecandidate = function (event) {
                         if (event.candidate != null) {
@@ -378,38 +428,42 @@ export default function VideoMeet2() {
 
                     // Wait for their video stream
                     connections[socketListId].onaddstream = (event) => {
-                        console.log("BEFORE:", videoRef.current);
-                        console.log("FINDING ID: ", socketListId);
+                        console.log("Stream received for:", socketListId, event.stream);
 
-                        let videoExists = videoRef.current.find(video => video.socketId === socketListId);
+                        // Check if stream is valid
+                        if (!event.stream || event.stream.getTracks().length === 0) {
+                            console.log("Empty stream received for:", socketListId);
+                            return;
+                        }
 
-                        if (videoExists) {
-                            console.log("FOUND EXISTING");
+                        setVideos(videos => {
+                            // Check if video already exists
+                            const existingIndex = videos.findIndex(v => v.socketId === socketListId);
 
-                            // Update the stream of the existing video
-                            setVideos(videos => {
-                                const updatedVideos = videos.map(video =>
-                                    video.socketId === socketListId ? { ...video, stream: event.stream } : video
-                                );
+                            if (existingIndex >= 0) {
+                                // Update existing video
+                                const updatedVideos = [...videos];
+                                updatedVideos[existingIndex] = {
+                                    ...updatedVideos[existingIndex],
+                                    stream: event.stream,
+                                    timestamp: Date.now() // Force re-render
+                                };
                                 videoRef.current = updatedVideos;
                                 return updatedVideos;
-                            });
-                        } else {
-                            // Create a new video
-                            console.log("CREATING NEW");
-                            let newVideo = {
-                                socketId: socketListId,
-                                stream: event.stream,
-                                autoplay: true,
-                                playsinline: true
-                            };
-
-                            setVideos(videos => {
+                            } else {
+                                // Add new video
+                                const newVideo = {
+                                    socketId: socketListId,
+                                    stream: event.stream,
+                                    autoplay: true,
+                                    playsinline: true,
+                                    timestamp: Date.now()
+                                };
                                 const updatedVideos = [...videos, newVideo];
                                 videoRef.current = updatedVideos;
                                 return updatedVideos;
-                            });
-                        }
+                            }
+                        });
                     };
 
 
@@ -509,142 +563,29 @@ export default function VideoMeet2() {
 
 
     //  no restriction on message sending
-    let sendMessage = () => {
+    // let sendMessage = () => {
+    //     console.log(socketRef.current);
+    //     if (!message.trim()) return;
+    //     socketRef.current.emit('chat-message', message, username);
+    //     setMessage("");
+    // };
+
+    let sendMessage = (messageText) => {
         console.log(socketRef.current);
-        if (!message.trim()) return;
-        socketRef.current.emit('chat-message', message, username);
-        setMessage("");
+        if (!messageText.trim()) return;
+        socketRef.current.emit('chat-message', messageText, username);
     };
 
 
 
 
     // with 5 seconds restriction on message sending
-    // let sendMessage = () => {
-    //     if (cooldown) return; // Don't send if cooldown is active
-    //     if (!message.trim()) return; // Prevent empty messages
-
-    //     socketRef.current.emit('chat-message', message, username);
-    //     setMessage(""); // Clear input after sending
-
-    //     // Start cooldown
-    //     setCooldown(true);
-    //     setCountdown(5); // Start at 5 seconds
-
-    //     // Countdown logic
-    //     let timer = setInterval(() => {
-    //         setCountdown(prev => {
-    //             if (prev <= 1) {
-    //                 clearInterval(timer);
-    //                 setCooldown(false); // Re-enable send button
-    //                 return 0;
-    //             }
-    //             return prev - 1;
-    //         });
-    //     }, 1000);
-    // };
-
-
 
     // with 3 messages in 10 seconds restriction on message sending
-    // let sendMessage = () => {
-    //     if (cooldown) return; // Don't send if cooldown is active
-    //     if (!message.trim()) return; // Prevent empty messages
-
-    //     // --- Rate limiting check ---
-    //     if (messageCount >= 3) {
-    //         // Block user for 15 seconds
-    //         setCooldown(true);
-    //         setCountdown(15);
-
-    //         let timer = setInterval(() => {
-    //             setCountdown(prev => {
-    //                 if (prev <= 1) {
-    //                     clearInterval(timer);
-    //                     setCooldown(false);
-    //                     setMessageCount(0); // Reset message count after cooldown
-    //                     return 0;
-    //                 }
-    //                 return prev - 1;
-    //             });
-    //         }, 1000);
-
-    //         alert("You're sending messages too fast! Please wait 15 seconds.");
-    //         return;
-    //     }
-
-    //     // Send the message to server
-    //     socketRef.current.emit('chat-message', message, username);
-    //     setMessage("");
-
-    //     // Increment message count
-    //     setMessageCount(prev => prev + 1);
-
-    //     // Reset count automatically after 10 seconds
-    //     setTimeout(() => {
-    //         setMessageCount(prev => Math.max(prev - 1, 0));
-    //     }, 10000);
-    // };  // Implemented in Backend now
-
-
 
     //  (content-based spam check)
-    // with 3 messages in 10 seconds restriction and no duplicate messages restriction on message sending
-    // let sendMessage = () => {
-    //     if (cooldown) return; // Don't send if cooldown is active
-    //     if (!message.trim()) return; // Prevent empty messages
-
-    //     // --- Content-based spam check ---
-    //     if (message.trim().toLowerCase() === lastMessage.trim().toLowerCase()) {
-    //         alert("You cannot send the same message repeatedly!");
-    //         return;
-    //     }
-
-    //     // --- Rate limiting check (3 messages in 10 seconds) ---
-    //     if (messageCount >= 3) {
-    //         // Block user for 15 seconds
-    //         setCooldown(true);
-    //         setCountdown(15);
-
-    //         let timer = setInterval(() => {
-    //             setCountdown(prev => {
-    //                 if (prev <= 1) {
-    //                     clearInterval(timer);
-    //                     setCooldown(false);
-    //                     setMessageCount(0); // Reset message count after cooldown
-    //                     return 0;
-    //                 }
-    //                 return prev - 1;
-    //             });
-    //         }, 1000);
-
-    //         alert("You're sending messages too fast! Please wait 15 seconds.");
-    //         return;
-    //     }
-
-    //     // --- Send the message to server ---
-    //     socketRef.current.emit('chat-message', message, username);
-    //     setMessage(""); // Clear input
-
-    //     // Track last message for duplicate detection
-    //     setLastMessage(message);
-
-    //     // Increment message count
-    //     setMessageCount(prev => prev + 1);
-
-    //     // Reset count automatically after 10 seconds
-    //     setTimeout(() => {
-    //         setMessageCount(prev => Math.max(prev - 1, 0));
-    //     }, 10000);
-    // };
 
     // Reset lastMessage after 15 seconds to allow re-sending old messages
-    // useEffect(() => {
-    //     if (lastMessage) {
-    //         const timer = setTimeout(() => setLastMessage(""), 15000); // Reset after 15s
-    //         return () => clearTimeout(timer);
-    //     }
-    // }, [lastMessage]);
 
 
 
@@ -662,6 +603,35 @@ export default function VideoMeet2() {
             chatDisplay.scrollTop = chatDisplay.scrollHeight;
         }
     }, [messages]);
+
+
+    // Add this with your other useEffects
+    useEffect(() => {
+        console.log("🔄 Videos state updated - Count:", videos.length, "IDs:", videos.map(v => v.socketId));
+    }, [videos]);
+
+
+    // Add this with your other useEffects
+    useEffect(() => {
+        return () => {
+            // Cleanup when component unmounts
+            console.log("🧹 Cleaning up all connections on unmount");
+            Object.keys(connections).forEach(id => {
+                if (connections[id]) {
+                    connections[id].close();
+                    delete connections[id];
+                }
+            });
+
+            if (socketRef.current) {
+                socketRef.current.disconnect();
+            }
+
+            // Clear videos state
+            setVideos([]);
+        };
+    }, []);
+
 
 
     return (
@@ -704,65 +674,17 @@ export default function VideoMeet2() {
 
                 <div className="meetVideoContainer">
 
-                    {showModal ? <div className="chatRoom">
-
-                        <div className="chatContainer">
-                            <h2>Messages</h2>
-
-                            <div className="chattingDisplay">
-                                {messages.length !== 0 ? (
-                                    messages.map((item, index) => {
-                                        const isSelf = item.sender === username;
-
-                                        return (
-                                            <div
-                                                key={index}
-                                                className={`messageBubble ${isSelf ? 'messageSelf' : 'messageOther'}`}
-                                            >
-                                                {!isSelf && <p className="messageSender">{item.sender}</p>}
-                                                <p>{item.data}</p>
-                                            </div>
-                                        );
-                                    })
-                                ) : (
-                                    <p style={{ textAlign: "center", color: "#777" }}>No Messages Yet</p>
-                                )}
-                            </div>
-
-
-                            <div className="chattingArea">
-                                <TextField value={message}
-                                    onChange={(e) => setMessage(e.target.value)}
-                                    // on click enter key also sends message
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            sendMessage();
-                                        }
-                                    }}
-                                    id="outlined-basic" label="Type something..."
-                                    variant="outlined" />
-                                {/* <Button variant='contained' onClick={sendMessage}>Send</Button> */}
-                                <Button
-                                    variant='contained'
-                                    onClick={sendMessage}
-                                    disabled={cooldown} // disable during cooldown
-                                >
-                                    {cooldown ? (
-                                        <>
-                                            <AccessAlarmIcon style={{ marginRight: "5px" }} />
-                                            {countdown}s
-                                        </>
-                                    ) : (
-                                        "Send"
-                                    )}
-                                </Button>
-
-                            </div>
-
-
-                        </div>
-                    </div> : <></>}
+                    {showModal && (
+                        <ChatModal
+                            messages={messages}
+                            onSendMessage={sendMessage}
+                            onClose={() => setModal(false)}
+                            newMessages={newMessages}
+                            cooldown={cooldown}
+                            countdown={countdown}
+                            username={username}
+                        />
+                    )}
 
 
                     <div className="buttonContainers">
@@ -794,22 +716,25 @@ export default function VideoMeet2() {
 
                     <div className="conferenceView">
                         {videos.map((video) => (
-                            <div className='view' key={video.socketId}>
+                            <div className='view' key={`video-${video.socketId}`}>
                                 <video
-
                                     data-socket={video.socketId}
                                     ref={ref => {
-                                        if (ref && video.stream) {
-                                            ref.srcObject = video.stream;
+                                        if (ref) {
+                                            if (video.stream) {
+                                                ref.srcObject = video.stream;
+                                            } else {
+                                                // Clear the video if no stream
+                                                ref.srcObject = null;
+                                            }
                                         }
                                     }}
                                     autoPlay
-                                >
-                                </video>
+                                    playsInline
+                                    muted={video.socketId === socketIdRef.current}
+                                />
                             </div>
-
                         ))}
-
                     </div>
 
                 </div>
