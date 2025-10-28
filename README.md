@@ -13,17 +13,6 @@ Unlike conventional conferencing systems, Vidora integrates **multi-layer spam d
 
 ---
 
-## Core Technical Features  
-
-###  Real-Time Architecture  
-- **Frontend:** React.js + WebRTC + Socket.io-Client  
-- **Backend:** Node.js (Express + Socket.io)  
-- **Transport Layer:** WebSockets (event-driven full-duplex communication)  
-- **Database:** MongoDB (optional persistence layer)  
-- **AI API:** Google Perspective API for NLP-based content analysis  
-
----
-
 ## 🛡️ Safety & Moderation System  
 
 Vidora employs **13+ independent moderation and safety layers**, combining both **AI and rule-based filters** for comprehensive protection.  
@@ -49,8 +38,7 @@ Vidora employs **13+ independent moderation and safety layers**, combining both 
 ---
 
 ## AI Moderation Layer  
-
-### Integrated API  
+ 
 **Google Perspective API**  
 - Parameters analyzed:  
   - `TOXICITY`  
@@ -66,7 +54,9 @@ If `toxicity > 0.8` or `spam > 0.5`, message is auto-blocked and cooldown applie
 
 ## System Architecture Diagram  
 
-
+<p align="center">
+  <img src="./System Architecture.png" alt="Vidora System Architecture" width="700">
+</p>
 
 
 ---
@@ -85,7 +75,40 @@ If `toxicity > 0.8` or `spam > 0.5`, message is auto-blocked and cooldown applie
 ---
 
 ## 🗂️ Folder Structure  
+```bash
+VIDORA
+├── Backend
+│   ├── node_modules
+│   ├── src
+│   │   ├── controllers
+│   │   ├── models
+│   │   ├── routes
+│   │   └── app.js
+│   ├── .env
+│   ├── package.json
+│   └── package-lock.json
+│
+└── Frontend
+    ├── node_modules
+    ├── public
+    ├── src
+    │   ├── assets
+    │   ├── contexts
+    │   ├── pages
+    │   ├── styles
+    │   ├── utils
+    │   ├── App.css
+    │   ├── App.jsx
+    │   ├── environment.js
+    │   ├── index.css
+    │   └── main.jsx
+    ├── index.html
+    ├── package.json
+    ├── vite.config.js
+    ├── vercel.json
+    └── README.md
 
+```
 
 
 
@@ -120,6 +143,12 @@ npm run dev
 ```bash
 cd ../Frontend
 npm install
+```
+
+Update your Frontend/src/environment.js file to enable local development:
+```bash
+let IS_PROD = false; // false = local, true = production
+
 npm start
 ```
 
@@ -158,4 +187,4 @@ If you’d like to add new features or fix bugs:
 
 **Shivam Kasaudhan**  
 If you like this project, don’t forget to **⭐ star the repo** on GitHub!  
-_Code, Create, Caffeinate — and share the love._
+_Connect, Build, and Communicate — safely with Vidora._
