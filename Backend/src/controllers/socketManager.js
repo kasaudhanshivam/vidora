@@ -128,7 +128,7 @@ export const connectToSocket = (server) => {
 
 
         // With Spam Restrictions 
-        Socket.on("chat-message", async (data, sender) => {
+        Socket.on("chat-message", async (data, sender, callback) => {
             const now = Date.now();
             const userData = messageTracker[Socket.id];
             const cleanMessage = data.trim().toLowerCase();
@@ -277,6 +277,7 @@ export const connectToSocket = (server) => {
                     io.to(elem).emit("chat-message", data, sender, Socket.id);
                 });
             }
+            if (callback) callback({ success: true });
         });
 
 

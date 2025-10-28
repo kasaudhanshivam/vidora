@@ -523,15 +523,15 @@
 }
 
 .conferenceView:has(.view:only-child) .view {
-  width: auto;
-  height: auto;
+  width: 40rem;
+  height: 30rem;
   max-width: 90vw;
   max-height: 90vh;
 }
 
 .conferenceView:has(.view:only-child) .view video {
-  width: auto;
-  height: auto;
+  width: 40rem;
+  height: 30rem;
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;

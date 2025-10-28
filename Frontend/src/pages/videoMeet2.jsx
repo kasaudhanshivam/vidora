@@ -562,18 +562,16 @@ export default function VideoMeet2() {
     };
 
 
-    //  no restriction on message sending
-    // let sendMessage = () => {
-    //     console.log(socketRef.current);
-    //     if (!message.trim()) return;
-    //     socketRef.current.emit('chat-message', message, username);
-    //     setMessage("");
-    // };
-
-    let sendMessage = (messageText) => {
+    let sendMessage = async (messageText) => {
         console.log(socketRef.current);
-        if (!messageText.trim()) return;
-        socketRef.current.emit('chat-message', messageText, username);
+        if (cooldown || !messageText.trim()) return;
+        setCooldown(true);
+        await new Promise((resolve) => {
+            socketRef.current.emit('chat-message', messageText, username, (ack) => {
+                resolve(ack);
+            });
+        });
+        setCooldown(false);
     };
 
 
@@ -607,7 +605,7 @@ export default function VideoMeet2() {
 
     // Add this with your other useEffects
     useEffect(() => {
-        console.log("🔄 Videos state updated - Count:", videos.length, "IDs:", videos.map(v => v.socketId));
+        console.log("Videos state updated - Count:", videos.length, "IDs:", videos.map(v => v.socketId));
     }, [videos]);
 
 
