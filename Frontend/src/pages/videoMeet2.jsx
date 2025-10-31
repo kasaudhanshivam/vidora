@@ -564,14 +564,12 @@ export default function VideoMeet2() {
 
     let sendMessage = async (messageText) => {
         console.log(socketRef.current);
-        if (cooldown || !messageText.trim()) return;
-        setCooldown(true);
+        if (!messageText.trim()) return;
         await new Promise((resolve) => {
             socketRef.current.emit('chat-message', messageText, username, (ack) => {
                 resolve(ack);
             });
         });
-        setCooldown(false);
     };
 
 
