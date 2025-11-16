@@ -24,8 +24,8 @@ const LandingPage = () => {
 
         <div className="landingMainContainer">
           <div className="heading">
-            <h1><span style={{color: "#FFB800"}}>Connect</span> with your loved ones.</h1>
-            <p>Join our community and stay connected with your family and friends❤️.</p>
+            <h1><span style={{color: "#FFB800"}}>Connect</span> with confidence💁‍♂️.</h1>
+            <p>Experience secure, spam-free video conferencing with AI-powered content moderation.</p>
             <button className='start'>
               <Link to="/home">Get Started</Link>
               </button>
